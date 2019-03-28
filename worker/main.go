@@ -7,7 +7,7 @@ import (
 
 func main() {
 	opt := redis.Options{
-		Addr:               "localhost:6379",
+		Addr:              "localhost:6379",
 		Password:           "",
 	}
 	client := redis.NewClient(&opt)
