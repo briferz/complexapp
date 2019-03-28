@@ -7,14 +7,14 @@ import (
 
 func main() {
 	opt := redis.Options{
-		Addr:               "localhost",
+		Addr:               "localhost:6379",
 		Password:           "",
 	}
 	client := redis.NewClient(&opt)
 
 	err := client.Ping().Err()
 	if err != nil {
-		log.Fatal("unable to reach Redis.")
+		log.Fatal("unable to reach Redis: ",err)
 	}
 
 	log.Println("success reaching Redis.")
