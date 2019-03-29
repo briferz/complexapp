@@ -6,3 +6,6 @@ github.com/go-redis/redis/internal/hashtag
 github.com/go-redis/redis/internal/pool
 github.com/go-redis/redis/internal/proto
 github.com/go-redis/redis/internal/util
+# github.com/lib/pq v1.0.0
+github.com/lib/pq
+github.com/lib/pq/oid
