@@ -1,31 +1,42 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
-	"github.com/briferz/complexapp/shared/keys"
-	_ "github.com/lib/pq"
+	"github.com/briferz/complexapp/server/controller"
+	"github.com/briferz/complexapp/shared/redisshared"
 	"log"
-	"os"
-	"os/signal"
+	"net/http"
 )
 
 func main() {
 
-	data, err := keys.PgDataSource()
+	db, err := pgDial()
 	if err != nil {
-		log.Fatalf("error getting connection data: %s", err)
-	}
-	db, err := sql.Open("postgres", data)
-	if err != nil {
-		log.Fatalf("error reaching database: %s", err)
+		log.Fatalf("error: %s", err)
 	}
 	defer db.Close()
-
 	log.Println("success reaching database.")
 
-	signalCh := make(chan os.Signal)
-	signal.Notify(signalCh, os.Interrupt, os.Kill)
-	sig := <-signalCh
-	fmt.Printf("Received signal %s. Exiting...\n", sig)
+	client, err := redisshared.Client()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("success reaching Redis.")
+
+	ctr := controller.New(db, client)
+
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/values/current", controller.DurationMid(ctr.HandleGetPostgresCurrent))
+	mux.HandleFunc("/values/all", controller.DurationMid(ctr.HandleGetRedisValues))
+	mux.HandleFunc("/values", controller.DurationMid(ctr.HandlePostValue))
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Hi!"))
+	})
+
+	log.Println("listening...")
+	err = http.ListenAndServe(":80", mux)
+	if err != nil {
+		log.Fatalf("unable to bind server: %s", err)
+	}
+
 }
