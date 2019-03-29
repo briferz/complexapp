@@ -1,0 +1,11 @@
+FROM golang:alpine
+
+RUN apk add --no-cache git
+
+WORKDIR /project
+COPY ./ ./
+
+RUN go get -d -v ./...
+RUN go build -o $GOPATH/bin/app ./server/
+
+CMD ["app"]
