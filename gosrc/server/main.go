@@ -34,7 +34,7 @@ func main() {
 	})
 
 	log.Println("listening...")
-	err = http.ListenAndServe(":80", mux)
+	err = http.ListenAndServe(":8080", mux)
 	if err != nil {
 		log.Fatalf("unable to bind server: %s", err)
 	}

@@ -5,6 +5,6 @@ RUN apk add --no-cache git
 WORKDIR /project
 COPY ./ ./
 
-RUN go build -o $GOPATH/bin/app ./server/
+RUN go build -o $GOPATH/bin/app ./worker/
 
 CMD ["app"]
