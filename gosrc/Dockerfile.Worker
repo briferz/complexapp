@@ -1,0 +1,14 @@
+FROM golang:alpine AS builder
+
+RUN apk add --no-cache git
+
+WORKDIR /project
+COPY ./ ./
+
+RUN go mod download
+RUN go build -ldflags="-w -s" -o $GOPATH/bin/app ./worker/
+
+FROM scratch
+
+COPY --from=builder $GOPATH/bin/app /go/bin/app
+ENTRYPOINT ["/go/bin/app"]
