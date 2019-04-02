@@ -5,26 +5,30 @@
       "name": "client",
       "image": "brifer/multi-client",
       "hostname": "client",
+      "memory": 128,
       "essential": false
     },
     {
       "name": "server",
       "image": "brifer/multi-server",
       "hostname": "api",
+      "memory": 128,
       "essential": false
     },
     {
       "name": "worker",
       "image": "brifer/multi-worker",
       "hostname": "worker",
+      "memory": 64,
       "essential": false
     },{
       "name": "nginx",
       "image": "brifer/multi-nginx",
+      "memory": 64,
       "essential": true,
       "portMappings": [
         {
-          "hostPort":8080,
+          "hostPort":80,
           "containerPort": 80
         }
       ],
