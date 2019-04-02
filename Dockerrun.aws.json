@@ -19,12 +19,12 @@
       "name": "worker",
       "image": "brifer/multi-worker",
       "hostname": "worker",
-      "memory": 64,
+      "memory": 128,
       "essential": false
     },{
       "name": "nginx",
       "image": "brifer/multi-nginx",
-      "memory": 64,
+      "memory": 128,
       "essential": true,
       "portMappings": [
         {
