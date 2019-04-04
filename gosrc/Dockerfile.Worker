@@ -1,13 +1,13 @@
 FROM golang:alpine AS builder
 
-RUN apk add --no-cache git
+RUN apk update && apk add --no-cache git
 
 WORKDIR /project
 COPY ./ ./
 
-RUN go build -ldflags="-w -s" -o $GOPATH/bin/app ./worker/
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod vendor -ldflags="-w -s" -o /go/bin/app ./worker/
 
 FROM scratch
 
-COPY --from=builder go/bin/app /go/bin/app
+COPY --from=builder /go/bin/app /go/bin/app
 ENTRYPOINT ["/go/bin/app"]

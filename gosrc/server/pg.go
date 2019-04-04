@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"github.com/briferz/complexapp/shared/keys"
 	_ "github.com/lib/pq"
-	"log"
 )
 
 func pgDial() (*sql.DB, error) {
 	data, err := keys.PgDataSource()
 	if err != nil {
-		log.Fatalf("error getting connection data: %s", err)
+		return nil, fmt.Errorf("error getting connection data: %s", err)
 	}
 	db, err := sql.Open("postgres", data)
 	if err != nil {

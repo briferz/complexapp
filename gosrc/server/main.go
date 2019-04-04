@@ -5,20 +5,25 @@ import (
 	"github.com/briferz/complexapp/shared/redisshared"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"sync"
 )
 
 func main() {
-
+	log.Printf("Starting...")
 	db, err := pgDial()
 	if err != nil {
-		log.Fatalf("error: %s", err)
+		log.Printf("error: %s", err)
+		os.Exit(1)
 	}
 	defer db.Close()
 	log.Println("success reaching database.")
 
 	client, err := redisshared.Client()
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
+		os.Exit(2)
 	}
 	log.Println("success reaching Redis.")
 
@@ -33,10 +38,28 @@ func main() {
 		w.Write([]byte("Hi!"))
 	})
 
-	log.Println("listening...")
-	err = http.ListenAndServe(":8080", mux)
-	if err != nil {
-		log.Fatalf("unable to bind server: %s", err)
-	}
+	sigCh := func() chan os.Signal {
+		ch := make(chan os.Signal)
+
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go func() {
+			wg.Done()
+			signal.Notify(ch, os.Interrupt, os.Kill)
+		}()
+		wg.Wait()
+		return ch
+	}()
+
+	go func() {
+		log.Println("listening...")
+		err = http.ListenAndServe(":8080", mux)
+		if err != nil {
+			log.Printf("unable to bind server: %s", err)
+			os.Exit(3)
+		}
+	}()
+
+	log.Printf("signaled finish. Signal=%v", <-sigCh)
 
 }

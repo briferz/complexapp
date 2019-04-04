@@ -5,13 +5,13 @@ services:
   redis:
     image: 'redis:latest'
   nginx:
+    restart: always
     depends_on:
       - client
       - api
-    restart: always
     build:
       context: ./nginx
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - 8080:80
   api:
@@ -21,7 +21,7 @@ services:
     restart: on-failure
     build:
       context: ./gosrc
-      dockerfile: Dockerfile.Server
+      dockerfile: Dockerfile.ServerDev
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -33,7 +33,7 @@ services:
   client:
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     volumes:
       - /app/node_modules
       - ./client:/app
@@ -44,7 +44,7 @@ services:
     restart: on-failure
     build:
       context: ./gosrc
-      dockerfile: Dockerfile.Worker
+      dockerfile: Dockerfile.WorkerDev
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
